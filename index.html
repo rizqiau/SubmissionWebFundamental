@@ -1,10 +1,9 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Notes App</title>
-    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <app-bar></app-bar>
@@ -17,14 +16,19 @@
 
       <section class="notes-list-section">
         <h2>Your Notes</h2>
+        <loading-indicator id="globalLoader" hidden></loading-indicator>
         <div id="notesList" class="notes-grid"></div>
+      </section>
+
+      <section class="archived-notes-list-section">
+        <h2>Archived Notes</h2>
+        <loading-indicator id="archivedNotesLoader" hidden></loading-indicator>
+        <div id="archivedNotesList" class="notes-grid"></div>
       </section>
     </main>
 
     <footer>
       <p>&copy; 2025 Notes App. Made with ❤️</p>
     </footer>
-
-    <script src="main.js"></script>
   </body>
 </html>

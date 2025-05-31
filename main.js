@@ -1,111 +1,7 @@
-// Data Dummy
-const notesData = [
-  {
-    id: "notes-jT-jjsyz61J8XKiI",
-    title: "Welcome to Notes, Dimas!",
-    body: "Welcome to Notes! This is your first note. You can archive it, delete it, or create new ones.",
-    createdAt: "2022-07-28T10:03:12.594Z",
-    archived: false,
-  },
-  {
-    id: "notes-aB-cdefg12345",
-    title: "Meeting Agenda",
-    body: "Discuss project updates and assign tasks for the upcoming week.",
-    createdAt: "2022-08-05T15:30:00.000Z",
-    archived: false,
-  },
-  {
-    id: "notes-XyZ-789012345",
-    title: "Shopping List",
-    body: "Milk, eggs, bread, fruits, and vegetables.",
-    createdAt: "2022-08-10T08:45:23.120Z",
-    archived: false,
-  },
-  {
-    id: "notes-1a-2b3c4d5e6f",
-    title: "Personal Goals",
-    body: "Read two books per month, exercise three times a week, learn a new language.",
-    createdAt: "2022-08-15T18:12:55.789Z",
-    archived: false,
-  },
-  {
-    id: "notes-LMN-456789",
-    title: "Recipe: Spaghetti Bolognese",
-    body: "Ingredients: ground beef, tomatoes, onions, garlic, pasta. Steps:...",
-    createdAt: "2022-08-20T12:30:40.200Z",
-    archived: false,
-  },
-  {
-    id: "notes-QwErTyUiOp",
-    title: "Workout Routine",
-    body: "Monday: Cardio, Tuesday: Upper body, Wednesday: Rest, Thursday: Lower body, Friday: Cardio.",
-    createdAt: "2022-08-25T09:15:17.890Z",
-    archived: false,
-  },
-  {
-    id: "notes-abcdef-987654",
-    title: "Book Recommendations",
-    body: "1. 'The Alchemist' by Paulo Coelho\n2. '1984' by George Orwell\n3. 'To Kill a Mockingbird' by Harper Lee",
-    createdAt: "2022-09-01T14:20:05.321Z",
-    archived: false,
-  },
-  {
-    id: "notes-zyxwv-54321",
-    title: "Daily Reflections",
-    body: "Write down three positive things that happened today and one thing to improve tomorrow.",
-    createdAt: "2022-09-07T20:40:30.150Z",
-    archived: false,
-  },
-  {
-    id: "notes-poiuyt-987654",
-    title: "Travel Bucket List",
-    body: "1. Paris, France\n2. Kyoto, Japan\n3. Santorini, Greece\n4. New York City, USA",
-    createdAt: "2022-09-15T11:55:44.678Z",
-    archived: false,
-  },
-  {
-    id: "notes-asdfgh-123456",
-    title: "Coding Projects",
-    body: "1. Build a personal website\n2. Create a mobile app\n3. Contribute to an open-source project",
-    createdAt: "2022-09-20T17:10:12.987Z",
-    archived: false,
-  },
-  {
-    id: "notes-5678-abcd-efgh",
-    title: "Project Deadline",
-    body: "Complete project tasks by the deadline on October 1st.",
-    createdAt: "2022-09-28T14:00:00.000Z",
-    archived: false,
-  },
-  {
-    id: "notes-9876-wxyz-1234",
-    title: "Health Checkup",
-    body: "Schedule a routine health checkup with the doctor.",
-    createdAt: "2022-10-05T09:30:45.600Z",
-    archived: false,
-  },
-  {
-    id: "notes-qwerty-8765-4321",
-    title: "Financial Goals",
-    body: "1. Create a monthly budget\n2. Save 20% of income\n3. Invest in a retirement fund.",
-    createdAt: "2022-10-12T12:15:30.890Z",
-    archived: false,
-  },
-  {
-    id: "notes-98765-54321-12345",
-    title: "Holiday Plans",
-    body: "Research and plan for the upcoming holiday destination.",
-    createdAt: "2022-10-20T16:45:00.000Z",
-    archived: false,
-  },
-  {
-    id: "notes-1234-abcd-5678",
-    title: "Language Learning",
-    body: "Practice Spanish vocabulary for 30 minutes every day.",
-    createdAt: "2022-10-28T08:00:20.120Z",
-    archived: false,
-  },
-];
+import Swal from "sweetalert2";
+import "./style.css";
+
+const API_BASE_URL = "https://notes-api.dicoding.dev/v2";
 
 const formatDate = (isoString) => {
   const options = { year: "numeric", month: "long", day: "numeric" };
@@ -122,7 +18,7 @@ class AppBar extends HTMLElement {
                     margin: 0;
                     font-size: 1.8em;
                     text-align: center;
-                    color: white; /* Defined in main style but good to have a fallback */
+                    color: white;
                 }
             </style>
             <h1>Notes App</h1>
@@ -131,68 +27,378 @@ class AppBar extends HTMLElement {
 }
 customElements.define("app-bar", AppBar);
 
-class NoteItem extends HTMLElement {
+class LoadingIndicator extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
     this.shadowRoot.innerHTML = `
-            <style>
-                :host {
-                    display: block; /* Make the custom element behave like a block */
-                    background-color: var(--card-background, #ffffff);
-                    border: 1px solid var(--border-color, #ddd);
-                    border-radius: 8px;
-                    padding: 20px;
-                    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-                    transition: transform 0.2s ease;
-                }
-                :host(:hover) {
-                    transform: translateY(-5px);
-                }
-                h3 {
-                    margin-top: 0;
-                    color: var(--secondary-color, #2196F3);
-                    font-size: 1.4em;
-                    margin-bottom: 10px;
-                }
-                p {
-                    font-size: 0.95em;
-                    color: #555;
-                    margin-bottom: 15px;
-                    white-space: pre-wrap;
-                }
-                .note-date {
-                    font-size: 0.8em;
-                    color: #888;
-                    text-align: right;
-                    margin-top: 10px;
-                }
-            </style>
-            <h3></h3>
-            <p></p>
-            <div class="note-date"></div>
-        `;
+      <style>
+        .loader {
+          border: 8px solid #f3f3f3;
+          border-top: 8px solid var(--primary-color, #4caf50);
+          border-radius: 50%;
+          width: 50px;
+          height: 50px;
+          animation: spin 1s linear infinite;
+          margin: 20px auto;
+        }
+
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+
+        :host([hidden]) {
+          display: none;
+        }
+      </style>
+      <div class="loader"></div>
+    `;
   }
 
-  static get observedAttributes() {
-    return ["note-title", "note-body", "note-createdat"];
+  show() {
+    this.removeAttribute("hidden");
   }
 
-  attributeChangedCallback(name, oldValue, newValue) {
-    if (name === "note-title") {
-      this.shadowRoot.querySelector("h3").textContent = newValue;
-    } else if (name === "note-body") {
-      this.shadowRoot.querySelector("p").textContent = newValue;
-    } else if (name === "note-createdat") {
-      this.shadowRoot.querySelector(".note-date").textContent =
-        formatDate(newValue);
+  hide() {
+    this.setAttribute("hidden", "");
+  }
+}
+customElements.define("loading-indicator", LoadingIndicator);
+
+document.addEventListener("DOMContentLoaded", () => {
+  const activeNotesListContainer = document.getElementById("notesList");
+  const archivedNotesListContainer =
+    document.getElementById("archivedNotesList");
+
+  const activeNotesLoader = document.getElementById("activeNotesLoader");
+  const archivedNotesLoader = document.getElementById("archivedNotesLoader");
+
+  const renderNotesToContainer = (notesToRender, container, loader) => {
+    if (!container) {
+      console.error("Target container not found for rendering notes!");
+      if (loader) loader.hide();
+      return;
     }
+    container.innerHTML = "";
+    if (notesToRender.length === 0) {
+      container.innerHTML =
+        '<p style="text-align: center; width: 100%;">No notes here.</p>';
+    } else {
+      notesToRender.forEach((note, index) => {
+        const noteItemElement = document.createElement("note-item");
+        noteItemElement.note = note;
+        noteItemElement.classList.add("note-item-enter");
+        container.appendChild(noteItemElement);
+      });
+    }
+    if (loader) loader.hide();
+  };
+
+  const fetchAndRenderAllNotes = async () => {
+    if (activeNotesLoader) activeNotesLoader.show();
+    if (archivedNotesLoader) archivedNotesLoader.show();
+
+    if (activeNotesListContainer) activeNotesListContainer.innerHTML = "";
+    if (archivedNotesListContainer) archivedNotesListContainer.innerHTML = "";
+
+    try {
+      const activeNotesResponse = await fetch(`${API_BASE_URL}/notes`);
+      const activeNotesJson = await activeNotesResponse.json();
+      if (activeNotesJson.status === "success") {
+        renderNotesToContainer(
+          activeNotesJson.data,
+          activeNotesListContainer,
+          activeNotesLoader,
+        );
+      } else {
+        console.error("Failed to fetch active notes:", activeNotesJson.message);
+        if (activeNotesListContainer)
+          activeNotesListContainer.innerHTML = `<p>Error: ${activeNotesJson.message}</p>`;
+        if (activeNotesLoader) activeNotesLoader.hide();
+      }
+
+      const archivedNotesResponse = await fetch(
+        `${API_BASE_URL}/notes/archived`,
+      );
+      const archivedNotesJson = await archivedNotesResponse.json();
+      if (archivedNotesJson.status === "success") {
+        renderNotesToContainer(
+          archivedNotesJson.data,
+          archivedNotesListContainer,
+          archivedNotesLoader,
+        );
+      } else {
+        console.error(
+          "Failed to fetch archived notes:",
+          archivedNotesJson.message,
+        );
+        if (archivedNotesListContainer)
+          archivedNotesListContainer.innerHTML = `<p>Error: ${archivedNotesJson.message}</p>`;
+        if (archivedNotesLoader) archivedNotesLoader.hide();
+      }
+    } catch (error) {
+      console.error("Error fetching notes:", error);
+      if (activeNotesListContainer)
+        activeNotesListContainer.innerHTML = `<p>Error fetching notes. ${error.message}</p>`;
+      if (archivedNotesListContainer)
+        archivedNotesListContainer.innerHTML = `<p>Error fetching notes. ${error.message}</p>`;
+      if (activeNotesLoader) activeNotesLoader.hide();
+      if (archivedNotesLoader) archivedNotesLoader.hide();
+      Swal.fire({
+        title: "Error Fetching Data!",
+        text: `Could not retrieve notes: ${error.message}. Please check your connection.`,
+        icon: "error",
+      });
+    }
+  };
+
+  fetchAndRenderAllNotes();
+
+  document.addEventListener("note-added", async (event) => {
+    const newNoteData = event.detail;
+
+    if (activeNotesLoader) activeNotesLoader.show();
+    try {
+      const response = await fetch(`${API_BASE_URL}/notes`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newNoteData),
+      });
+      const responseJson = await response.json();
+      if (responseJson.status === "success") {
+        Swal.fire({
+          title: "Success!",
+          text: "Note added successfully!",
+          icon: "success",
+          timer: 1500,
+          showConfirmButton: false,
+        });
+        fetchAndRenderAllNotes();
+      } else {
+        Swal.fire({
+          title: "Error!",
+          text: `Error adding note: ${responseJson.message}`,
+          icon: "error",
+        });
+        if (activeNotesLoader) activeNotesLoader.hide();
+      }
+    } catch (error) {
+      Swal.fire({
+        title: "Error!",
+        text: `Error adding note: ${error.message}`,
+        icon: "error",
+      });
+      if (activeNotesLoader) activeNotesLoader.hide();
+    }
+  });
+
+  document.addEventListener("delete-note", (event) => {
+    const noteIdToDelete = event.detail.noteId;
+
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "var(--primary-color, #4CAF50)",
+      cancelButtonColor: "var(--error-color, #f44336)",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        if (activeNotesLoader) activeNotesLoader.show();
+        try {
+          const response = await fetch(
+            `${API_BASE_URL}/notes/${noteIdToDelete}`,
+            {
+              method: "DELETE",
+            },
+          );
+          const responseJson = await response.json();
+
+          if (responseJson.status === "success") {
+            Swal.fire({
+              title: "Deleted!",
+              text: "Your note has been deleted.",
+              icon: "success",
+              timer: 1500,
+              showConfirmButton: false,
+            });
+            fetchAndRenderAllNotes();
+          } else {
+            Swal.fire({
+              title: "Error!",
+              text: `Error deleting note: ${responseJson.message}`,
+              icon: "error",
+            });
+            if (activeNotesLoader) activeNotesLoader.hide();
+          }
+        } catch (error) {
+          Swal.fire({
+            title: "Error!",
+            text: `Error deleting note: ${error.message}`,
+            icon: "error",
+          });
+          if (activeNotesLoader) activeNotesLoader.hide();
+        }
+      }
+    });
+  });
+
+  document.addEventListener("toggle-archive-status", async (event) => {
+    const { noteId, isArchived } = event.detail;
+    const action = isArchived ? "unarchive" : "archive";
+    const endpoint = `${API_BASE_URL}/notes/${noteId}/${action}`;
+
+    if (activeNotesLoader) activeNotesLoader.show();
+    if (archivedNotesLoader) archivedNotesLoader.show();
+
+    try {
+      const response = await fetch(endpoint, { method: "POST" });
+      const responseJson = await response.json();
+
+      if (responseJson.status === "success") {
+        Swal.fire({
+          title: "Success!",
+          text: `Note ${action}d successfully!`,
+          icon: "success",
+          timer: 1500,
+          showConfirmButton: false,
+        });
+        fetchAndRenderAllNotes();
+      } else {
+        alSwal.fire({
+          title: "Error!",
+          text: `Error ${action}ing note: ${responseJson.message}`,
+          icon: "error",
+        });
+        if (activeNotesLoader) activeNotesLoader.hide();
+        if (archivedNotesLoader) archivedNotesLoader.hide();
+      }
+    } catch (error) {
+      Swal.fire({
+        title: "Error!",
+        text: `Error ${action}ing note: ${error.message}`,
+        icon: "error",
+      });
+      if (activeNotesLoader) activeNotesLoader.hide();
+      if (archivedNotesLoader) archivedNotesLoader.hide();
+    }
+  });
+});
+
+class NoteItem extends HTMLElement {
+  constructor() {
+    super();
+    this._noteData = {};
+    this.attachShadow({ mode: "open" });
+    this.shadowRoot.innerHTML = `
+      <style>
+       
+        :host {
+            display: block;
+            background-color: var(--card-background, #ffffff);
+            border: 1px solid var(--border-color, #ddd);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: transform 0.2s ease;
+            position: relative;
+        }
+        h3 { }
+        p { }
+        .note-date { margin-bottom: 15px; }
+
+        .actions-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            justify-content: flex-end;
+        }
+
+        .action-button {
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: background-color 0.3s ease;
+        }
+        .delete-button {
+            background-color: var(--error-color, #f44336);
+        }
+        .delete-button:hover {
+            background-color: #d32f2f;
+        }
+        .archive-button {
+            background-color: var(--secondary-color, #2196f3);
+        }
+        .archive-button:hover {
+            background-color: #1976d2;
+        }
+      </style>
+      <h3></h3>
+      <p></p>
+      <div class="note-date"></div>
+      <div class="actions-container">
+        <button class="archive-button action-button" aria-label="Toggle Archive Status"></button>
+        <button class="delete-button action-button" aria-label="Delete Note">Delete</button>
+      </div>
+    `;
+
+    this._deleteButton = this.shadowRoot.querySelector(".delete-button");
+    this._archiveButton = this.shadowRoot.querySelector(".archive-button");
+
+    this._deleteButton.addEventListener("click", () => {
+      if (this._noteData.id) {
+        this.dispatchEvent(
+          new CustomEvent("delete-note", {
+            detail: { noteId: this._noteData.id },
+            bubbles: true,
+            composed: true,
+          }),
+        );
+      }
+    });
+
+    this._archiveButton.addEventListener("click", () => {
+      if (this._noteData.id) {
+        this.dispatchEvent(
+          new CustomEvent("toggle-archive-status", {
+            detail: {
+              noteId: this._noteData.id,
+              isArchived: this._noteData.archived,
+            },
+            bubbles: true,
+            composed: true,
+          }),
+        );
+      }
+    });
   }
 
   set note(noteData) {
-    this.setAttribute("note-title", noteData.title);
-    this.setAttribute("note-body", noteData.body);
-    this.setAttribute("note-createdat", noteData.createdAt);
+    this._noteData = noteData;
+    this.shadowRoot.querySelector("h3").textContent = noteData.title;
+    this.shadowRoot.querySelector("p").textContent = noteData.body;
+    this.shadowRoot.querySelector(".note-date").textContent = formatDate(
+      noteData.createdAt,
+    );
+
+    this._updateArchiveButton();
+  }
+
+  _updateArchiveButton() {
+    if (this._archiveButton) {
+      this._archiveButton.textContent = this._noteData.archived
+        ? "Unarchive"
+        : "Archive";
+      this._archiveButton.setAttribute(
+        "aria-label",
+        this._noteData.archived ? "Unarchive Note" : "Archive Note",
+      );
+    }
   }
 }
 customElements.define("note-item", NoteItem);
@@ -245,7 +451,7 @@ class NoteForm extends HTMLElement {
                     color: var(--error-color, #f44336);
                     font-size: 0.9em;
                     margin-top: 5px;
-                    display: none; /* Hidden by default */
+                    display: none;
                 }
                 input:invalid:not(:placeholder-shown),
                 textarea:invalid:not(:placeholder-shown) {
@@ -255,12 +461,12 @@ class NoteForm extends HTMLElement {
             <form>
                 <div>
                     <label for="noteTitle">Title:</label>
-                    <input type="text" id="noteTitle" required minlength="3">
+                    <input type="text" id="noteTitle" required minlength="3" placeholder="Enter note title...">
                     <div id="titleError" class="error-message">Title is required (min 3 characters).</div>
                 </div>
                 <div>
                     <label for="noteBody">Body:</label>
-                    <textarea id="noteBody" required minlength="10"></textarea>
+                    <textarea id="noteBody" required minlength="10" placeholder="Write your note here..."></textarea>
                     <div id="bodyError" class="error-message">Body is required (min 10 characters).</div>
                 </div>
                 <button type="submit">Add Note</button>
@@ -276,11 +482,11 @@ class NoteForm extends HTMLElement {
     this.form.addEventListener("submit", this.handleSubmit.bind(this));
     this.noteTitleInput.addEventListener(
       "input",
-      this.validateInput.bind(this, this.noteTitleInput, this.titleError)
+      this.validateInput.bind(this, this.noteTitleInput, this.titleError),
     );
     this.noteBodyTextarea.addEventListener(
       "input",
-      this.validateInput.bind(this, this.noteBodyTextarea, this.bodyError)
+      this.validateInput.bind(this, this.noteBodyTextarea, this.bodyError),
     );
   }
 
@@ -310,51 +516,26 @@ class NoteForm extends HTMLElement {
     this.validateInput(this.noteBodyTextarea, this.bodyError);
 
     if (this.form.checkValidity()) {
-      const newNote = {
-        id: `notes-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`, // ID unik
+      const noteData = {
         title: this.noteTitleInput.value,
         body: this.noteBodyTextarea.value,
-        createdAt: new Date().toISOString(),
-        archived: false,
       };
 
       this.dispatchEvent(
         new CustomEvent("note-added", {
-          detail: newNote,
+          detail: noteData,
           bubbles: true,
           composed: true,
-        })
+        }),
       );
 
       this.noteTitleInput.value = "";
       this.noteBodyTextarea.value = "";
-      this.noteTitleInput.focus();
+
+      this.titleError.style.display = "none";
+      this.bodyError.style.display = "none";
     } else {
-      alert("Please fill in all required fields correctly.");
     }
   }
 }
 customElements.define("note-form", NoteForm);
-
-document.addEventListener("DOMContentLoaded", () => {
-  const notesListContainer = document.getElementById("notesList");
-  let currentNotes = [...notesData];
-
-  const renderNotes = (notesToRender) => {
-    notesListContainer.innerHTML = "";
-    notesToRender.forEach((note) => {
-      const noteItemElement = document.createElement("note-item");
-      noteItemElement.note = note;
-      notesListContainer.appendChild(noteItemElement);
-    });
-  };
-
-  renderNotes(currentNotes);
-
-  document.addEventListener("note-added", (event) => {
-    const newNote = event.detail;
-    currentNotes.unshift(newNote);
-    renderNotes(currentNotes);
-    alert("Note added successfully!");
-  });
-});
